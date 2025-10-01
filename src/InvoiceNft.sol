@@ -94,6 +94,21 @@ contract InvoiceNft is ERC721, Ownable {
     // │                   Public Function                             │
     // ================================================================
 
+    function mintNft(
+        string memory tokenUri,
+        uint256 _amount
+    ) public onlyRegisteredUser(msg.sender) {
+        s_tokenIdToUri[s_tokenCounter] = tokenUri;
+        _safeMint(msg.sender, s_tokenCounter);
+        s_paymentStatus[msg.sender][s_tokenCounter] = PaymentInfo({
+            recipient: msg.sender,
+            payee: address(0),
+            amount: _amount,
+            paid: false
+        });
+        s_tokenCounter = s_tokenCounter + 1;
+    }
+
     function paymentOfInvoice(
         address _recipient,
         address _token,
@@ -128,21 +143,6 @@ contract InvoiceNft is ERC721, Ownable {
             protfolioWebsite: _protfolioWebsite
         });
         emit InvoiceNft__UserRegistered(msg.sender, _protfolioWebsite);
-    }
-
-    function mintNft(
-        string memory tokenUri,
-        uint256 _amount
-    ) public onlyRegisteredUser(msg.sender) {
-        s_tokenIdToUri[s_tokenCounter] = tokenUri;
-        _safeMint(msg.sender, s_tokenCounter);
-        s_paymentStatus[msg.sender][s_tokenCounter] = PaymentInfo({
-            recipient: msg.sender,
-            payee: address(0),
-            amount: _amount,
-            paid: false
-        });
-        s_tokenCounter = s_tokenCounter + 1;
     }
 
     function tokenURI(
