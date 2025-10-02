@@ -4,7 +4,8 @@ pragma solidity 0.8.20;
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-
+import {ErrorsLib} from "./libraries/ErrorsLib.sol";
+import {EventsLib} from "./libraries/EventsLib.sol";
 contract InvoiceNft is ERC721, Ownable {
     using SafeERC20 for IERC20;
 
@@ -19,32 +20,7 @@ contract InvoiceNft is ERC721, Ownable {
         uint256 amount;
         bool paid;
     }
-    // ================================================================
-    // │                   Eevnts                                     │
-    // ================================================================
-    event InvoiceNft__UserRegistered(
-        address indexed user,
-        string indexed website
-    );
-    event InvoiceNft__TokenRegisteredSuccessFully(address indexed token);
-    event InvoiceNft__PaymentSuccessfUll(
-        uint256 indexed amount,
-        address indexed payee,
-        uint256 indexed timestamp
-    );
 
-    // ================================================================
-    // │                   Error                                   │
-    // ================================================================
-    error BasicNft__TokenUriNotFound();
-    error InvoiceNft__UserIsNotRegistered();
-    error InvoiceNft__TokenAlreadyEnabled();
-    error InvoiceNft__AddressZeroFound();
-    error InvoiceNft__TokenNotEnabled();
-    error InvoiceNft__AlreadyPaid();
-    error InvoiceNft__AmountIsIncorrect();
-    error InvoiceNft__WrongInvoiceNumber();
-    error InvoiceNft__UserIsAlreadyRegistered();
 
     mapping(uint256 tokenId => string tokenUri) private s_tokenIdToUri;
     mapping(address user => UserInfo userData) private s_userInformation;
@@ -59,7 +35,7 @@ contract InvoiceNft is ERC721, Ownable {
 
     modifier onlyRegisteredUser(address _recipient) {
         if (s_userInformation[_recipient].user == address(0)) {
-            revert InvoiceNft__UserIsNotRegistered();
+            revert ErrorsLib.InvoiceNft__UserIsNotRegistered();
         }
         _;
     }
@@ -70,16 +46,16 @@ contract InvoiceNft is ERC721, Ownable {
         address _token
     ) {
         if (!s_isTokenEnabled[_token]) {
-            revert InvoiceNft__TokenNotEnabled();
+            revert ErrorsLib.InvoiceNft__TokenNotEnabled();
         }
 
         address ownerOfTokenId = ownerOf(_invoiceNumber);
         if (ownerOfTokenId != _recipient) {
-            revert InvoiceNft__WrongInvoiceNumber();
+            revert ErrorsLib.InvoiceNft__WrongInvoiceNumber();
         }
 
         if (s_paymentStatus[_recipient][_invoiceNumber].paid) {
-            revert InvoiceNft__AlreadyPaid();
+            revert ErrorsLib.InvoiceNft__AlreadyPaid();
         }
         _;
     }
@@ -120,7 +96,7 @@ contract InvoiceNft is ERC721, Ownable {
             _invoiceNumber
         ];
         if (_amount != paymentInfo.amount) {
-            revert InvoiceNft__AmountIsIncorrect();
+            revert ErrorsLib.InvoiceNft__AmountIsIncorrect();
         }
 
         IERC20(_token).safeTransferFrom(
@@ -131,7 +107,7 @@ contract InvoiceNft is ERC721, Ownable {
 
         paymentInfo.paid = true;
         paymentInfo.payee = msg.sender;
-        emit InvoiceNft__PaymentSuccessfUll(
+        emit EventsLib.InvoiceNft__PaymentSuccessfUll(
             _amount,
             msg.sender,
             block.timestamp
@@ -140,13 +116,13 @@ contract InvoiceNft is ERC721, Ownable {
 
     function registerUser(string calldata _protfolioWebsite) external {
         if (s_userInformation[msg.sender].user != address(0)) {
-            revert InvoiceNft__UserIsAlreadyRegistered();
+            revert ErrorsLib.InvoiceNft__UserIsAlreadyRegistered();
         }
         s_userInformation[msg.sender] = UserInfo({
             user: msg.sender,
             protfolioWebsite: _protfolioWebsite
         });
-        emit InvoiceNft__UserRegistered(msg.sender, _protfolioWebsite);
+        emit EventsLib.InvoiceNft__UserRegistered(msg.sender, _protfolioWebsite);
     }
 
     // ================================================================
@@ -155,14 +131,14 @@ contract InvoiceNft is ERC721, Ownable {
 
     function enableToken(address _token) external onlyOwner {
         if (_token == address(0)) {
-            revert InvoiceNft__AddressZeroFound();
+            revert ErrorsLib.InvoiceNft__AddressZeroFound();
         }
         if (s_isTokenEnabled[_token] == true) {
-            revert InvoiceNft__TokenAlreadyEnabled();
+            revert ErrorsLib.InvoiceNft__TokenAlreadyEnabled();
         }
 
         s_isTokenEnabled[_token] = true;
-        emit InvoiceNft__TokenRegisteredSuccessFully(_token);
+        emit EventsLib.InvoiceNft__TokenRegisteredSuccessFully(_token);
     }
 
     // ================================================================
@@ -177,7 +153,7 @@ contract InvoiceNft is ERC721, Ownable {
         uint256 tokenId
     ) public view override returns (string memory) {
         if (ownerOf(tokenId) == address(0)) {
-            revert BasicNft__TokenUriNotFound();
+            revert ErrorsLib.InvoiceNft__TokenUriNotFound();
         }
         return s_tokenIdToUri[tokenId];
     }
