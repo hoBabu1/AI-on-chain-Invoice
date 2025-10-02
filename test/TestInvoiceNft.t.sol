@@ -26,8 +26,9 @@ contract TestInvoiceNft is Test {
     }
 
     function testFlow() public {
-        // Register User
 
+
+        // Register User
         vm.startPrank(user);
         string memory userProtfolio = "ILoveYou";
         invoiceNft.registerUser(userProtfolio);
@@ -61,7 +62,6 @@ contract TestInvoiceNft is Test {
         assertEq(status, true);
         
         // giving token to payee
-        vm.startPrank(owner);
         mUsdt.transfer(payee,15e18);
         vm.stopPrank();
 
@@ -82,14 +82,21 @@ contract TestInvoiceNft is Test {
 
         assertEq(updateddata.paid, true);
         assertEq(updateddata.payee, payee);
+         vm.stopPrank();
+
+         // Register User
+        vm.startPrank(user);
+        vm.expectRevert();
+        invoiceNft.registerUser(userProtfolio);
+        vm.stopPrank();
 
     }
 
-    function test_PolygonAmoy() public {
-        vm.selectFork(polygonFork);
-        InvoiceNft.UserInfo memory check =
-        InvoiceNft(0xc45d948467Dd39278a456D4341C00C14F31300b2).getUserInfo(0x096DD3EBFab85c85309477DDf3A18FC31ecBa33a);
-        console.log(check.user);
-        console.log(InvoiceNft(0xc45d948467Dd39278a456D4341C00C14F31300b2).getPaymentInfo(0x096DD3EBFab85c85309477DDf3A18FC31ecBa33a,0).paid);
-    }
+    // function test_PolygonAmoy() public {
+    //     vm.selectFork(polygonFork);
+    //     InvoiceNft.UserInfo memory check =
+    //     InvoiceNft(0xc45d948467Dd39278a456D4341C00C14F31300b2).getUserInfo(0x096DD3EBFab85c85309477DDf3A18FC31ecBa33a);
+    //     console.log(check.user);
+    //     console.log(InvoiceNft(0xc45d948467Dd39278a456D4341C00C14F31300b2).getPaymentInfo(0x79EE1209bDB93e5e27a3c783fCBdB32FB8F1E22A,2).paid);
+    // }
 }

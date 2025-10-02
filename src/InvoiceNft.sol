@@ -44,6 +44,7 @@ contract InvoiceNft is ERC721, Ownable {
     error InvoiceNft__AlreadyPaid();
     error InvoiceNft__AmountIsIncorrect();
     error InvoiceNft__WrongInvoiceNumber();
+    error InvoiceNft__UserIsAlreadyRegistered();
 
     mapping(uint256 tokenId => string tokenUri) private s_tokenIdToUri;
     mapping(address user => UserInfo userData) private s_userInformation;
@@ -136,8 +137,11 @@ contract InvoiceNft is ERC721, Ownable {
             block.timestamp
         );
     }
-// @audit already register cannot re register 
+
     function registerUser(string calldata _protfolioWebsite) external {
+        if (s_userInformation[msg.sender].user != address(0)) {
+            revert InvoiceNft__UserIsAlreadyRegistered();
+        }
         s_userInformation[msg.sender] = UserInfo({
             user: msg.sender,
             protfolioWebsite: _protfolioWebsite
@@ -145,14 +149,9 @@ contract InvoiceNft is ERC721, Ownable {
         emit InvoiceNft__UserRegistered(msg.sender, _protfolioWebsite);
     }
 
-    function tokenURI(
-        uint256 tokenId
-    ) public view override returns (string memory) {
-        if (ownerOf(tokenId) == address(0)) {
-            revert BasicNft__TokenUriNotFound();
-        }
-        return s_tokenIdToUri[tokenId];
-    }
+    // ================================================================
+    // │                 Only Owner                                   │
+    // ================================================================
 
     function enableToken(address _token) external onlyOwner {
         if (_token == address(0)) {
@@ -172,6 +171,15 @@ contract InvoiceNft is ERC721, Ownable {
 
     function getTokenCounter() public view returns (uint256) {
         return s_tokenCounter;
+    }
+
+    function tokenURI(
+        uint256 tokenId
+    ) public view override returns (string memory) {
+        if (ownerOf(tokenId) == address(0)) {
+            revert BasicNft__TokenUriNotFound();
+        }
+        return s_tokenIdToUri[tokenId];
     }
 
     function getPaymentInfo(
