@@ -2,11 +2,13 @@
 
 pragma solidity 0.8.20;
 
-import {Test} from "forge-std/Test.sol";
+import {Test,console} from "forge-std/Test.sol";
 import {InvoiceNft} from "../src/InvoiceNft.sol";
 import {MockUsdt} from "./mock/MockUsdt.sol";
 
 contract TestInvoiceNft is Test {
+
+    uint256 polygonFork;
     InvoiceNft invoiceNft;
     MockUsdt mUsdt;
     address owner = makeAddr("Owner");
@@ -19,6 +21,7 @@ contract TestInvoiceNft is Test {
         vm.startPrank(owner);
         mUsdt = new MockUsdt();
         invoiceNft = new InvoiceNft(owner);
+         polygonFork = vm.createSelectFork("https://polygon-amoy.g.alchemy.com/v2/NdlLYVLk3FDOJ0Mz24GETvX4zjVejuHb");
         vm.stopPrank();
     }
 
@@ -80,5 +83,13 @@ contract TestInvoiceNft is Test {
         assertEq(updateddata.paid, true);
         assertEq(updateddata.payee, payee);
 
+    }
+
+    function test_PolygonAmoy() public {
+        vm.selectFork(polygonFork);
+        InvoiceNft.UserInfo memory check =
+        InvoiceNft(0xc45d948467Dd39278a456D4341C00C14F31300b2).getUserInfo(0x096DD3EBFab85c85309477DDf3A18FC31ecBa33a);
+        console.log(check.user);
+        console.log(InvoiceNft(0xc45d948467Dd39278a456D4341C00C14F31300b2).getPaymentInfo(0x096DD3EBFab85c85309477DDf3A18FC31ecBa33a,0).paid);
     }
 }

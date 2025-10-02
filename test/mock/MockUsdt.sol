@@ -6,6 +6,6 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract MockUsdt is ERC20  {
     constructor() ERC20("Mock USDT", "mUSDT") {
-        _mint(msg.sender, 15 * 10 ** decimals());
+        _mint(msg.sender, 15000 * 10 ** decimals());
     }
 }
