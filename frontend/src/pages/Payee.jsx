@@ -1,15 +1,24 @@
 import { useState } from 'react';
 import { ethers } from 'ethers';
+import { CONTRACT_ADDRESS, CONTRACT_ABI } from '../config/contract';
+
+// Standard ERC20 ABI (only the functions we need)
+const ERC20_ABI = [
+  "function approve(address spender, uint256 amount) public returns (bool)",
+  "function allowance(address owner, address spender) public view returns (uint256)"
+];
+
+const TOKEN_ADDRESS = '0x0C5eFB8ec77E3464AB85C0564371Ec1E067F8546';
 
 function Payee({ walletAddress }) {
   const [formData, setFormData] = useState({
     recipient: '',
-    token: '',
     invoiceNumber: '',
     amount: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [transactionResult, setTransactionResult] = useState(null);
+  const [currentStep, setCurrentStep] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -27,11 +36,6 @@ function Payee({ walletAddress }) {
 
     if (!formData.recipient || !ethers.isAddress(formData.recipient)) {
       alert('Please enter a valid recipient address!');
-      return false;
-    }
-
-    if (!formData.token || !ethers.isAddress(formData.token)) {
-      alert('Please enter a valid token address!');
       return false;
     }
 
@@ -56,33 +60,51 @@ function Payee({ walletAddress }) {
     }
 
     setIsSubmitting(true);
+    setTransactionResult(null);
 
     try {
-      // Here you would interact with your smart contract
-      // This is a placeholder for the actual contract interaction
+      // Get provider and signer
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+
+      // Convert amount to wei (multiply by 10^18)
+      const amountInWei = ethers.parseUnits(formData.amount, 18);
+
+      // Step 1: Approve token spending
+      setCurrentStep('Approving token spending...');
+      const tokenContract = new ethers.Contract(TOKEN_ADDRESS, ERC20_ABI, signer);
       
-      const paymentData = {
+      const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountInWei);
+      console.log('Approval transaction sent:', approveTx.hash);
+      
+      await approveTx.wait();
+      console.log('Approval confirmed');
+
+      // Step 2: Call paymentOfInvoice function
+      setCurrentStep('Processing payment...');
+      const nftContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+      
+      const paymentTx = await nftContract.paymentOfInvoice(
+        formData.recipient,
+        TOKEN_ADDRESS,
+        parseInt(formData.invoiceNumber),
+        amountInWei
+      );
+      
+      console.log('Payment transaction sent:', paymentTx.hash);
+      
+      const receipt = await paymentTx.wait();
+      console.log('Payment confirmed:', receipt);
+
+      setTransactionResult({
         recipient: formData.recipient,
-        token: formData.token,
+        token: TOKEN_ADDRESS,
         invoiceNumber: parseInt(formData.invoiceNumber),
         amount: formData.amount,
+        amountInWei: amountInWei.toString(),
         sender: walletAddress,
-        timestamp: new Date().toISOString()
-      };
-
-      // Simulate transaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // In real implementation, you would:
-      // 1. Get contract instance
-      // 2. Call payment function
-      // 3. Wait for transaction confirmation
-      
-      console.log('Payment Data:', paymentData);
-      
-      setTransactionResult({
-        ...paymentData,
-        txHash: '0x' + Math.random().toString(16).substr(2, 64), // Mock transaction hash
+        txHash: paymentTx.hash,
+        timestamp: new Date().toISOString(),
         status: 'success'
       });
 
@@ -91,16 +113,25 @@ function Payee({ walletAddress }) {
       // Reset form
       setFormData({
         recipient: '',
-        token: '',
         invoiceNumber: '',
         amount: ''
       });
 
     } catch (error) {
       console.error('Payment error:', error);
-      alert('Payment failed. Please try again.');
+      
+      let errorMessage = 'Payment failed. Please try again.';
+      
+      if (error.code === 'ACTION_REJECTED') {
+        errorMessage = 'Transaction was rejected by user.';
+      } else if (error.message) {
+        errorMessage = `Error: ${error.message}`;
+      }
+      
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
+      setCurrentStep('');
     }
   };
 
@@ -127,7 +158,7 @@ function Payee({ walletAddress }) {
               value={formData.recipient}
               onChange={handleInputChange}
               placeholder="0x..."
-              disabled={!walletAddress}
+              disabled={!walletAddress || isSubmitting}
             />
           </div>
 
@@ -137,13 +168,12 @@ function Payee({ walletAddress }) {
             </label>
             <input
               type="text"
-              name="token"
               className="form-input"
-              value={formData.token}
-              onChange={handleInputChange}
-              placeholder="0x... (ERC20 token contract address)"
-              disabled={!walletAddress}
+              value={TOKEN_ADDRESS}
+              disabled
+              style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
             />
+            <small style={{ color: '#666', fontSize: '12px' }}>Token address is fixed</small>
           </div>
 
           <div className="form-group">
@@ -157,7 +187,7 @@ function Payee({ walletAddress }) {
               value={formData.invoiceNumber}
               onChange={handleInputChange}
               placeholder="e.g., 12345"
-              disabled={!walletAddress}
+              disabled={!walletAddress || isSubmitting}
             />
           </div>
 
@@ -171,17 +201,26 @@ function Payee({ walletAddress }) {
               className="form-input"
               value={formData.amount}
               onChange={handleInputChange}
-              placeholder="e.g., 100.5"
-              disabled={!walletAddress}
+              placeholder="e.g., 70"
+              disabled={!walletAddress || isSubmitting}
             />
+            <small style={{ color: '#666', fontSize: '12px' }}>
+              {formData.amount && !isNaN(formData.amount) && `Will be converted to: ${formData.amount}e18 wei`}
+            </small>
           </div>
+
+          {currentStep && (
+            <div className="alert alert-info" style={{ marginBottom: '15px' }}>
+              ⏳ {currentStep}
+            </div>
+          )}
 
           <button
             type="submit"
             className="submit-btn"
             disabled={!walletAddress || isSubmitting}
           >
-            {isSubmitting ? 'Processing Payment...' : 'Process Payment'}
+            {isSubmitting ? 'Processing...' : 'Process Payment'}
           </button>
         </form>
 
@@ -189,7 +228,15 @@ function Payee({ walletAddress }) {
           <div className="result-box">
             <h3 className="result-title">✅ Payment Successful!</h3>
             <div className="result-content">
-              <strong>Transaction Hash:</strong> {transactionResult.txHash}
+              <strong>Transaction Hash:</strong> 
+              <a 
+                href={`https://etherscan.io/tx/${transactionResult.txHash}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ color: '#4CAF50', marginLeft: '5px' }}
+              >
+                {transactionResult.txHash}
+              </a>
               <br />
               <strong>Recipient:</strong> {transactionResult.recipient}
               <br />
@@ -197,7 +244,9 @@ function Payee({ walletAddress }) {
               <br />
               <strong>Invoice Number:</strong> {transactionResult.invoiceNumber}
               <br />
-              <strong>Amount:</strong> {transactionResult.amount}
+              <strong>Amount:</strong> {transactionResult.amount} tokens
+              <br />
+              <strong>Amount (Wei):</strong> {transactionResult.amountInWei}
               <br />
               <strong>Sender:</strong> {transactionResult.sender}
               <br />
