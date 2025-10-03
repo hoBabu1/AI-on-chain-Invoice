@@ -13,8 +13,8 @@ export const POLYGON_NETWORK = {
   blockExplorerUrls: ['https://amoy.polygonscan.com/']
 };
 
-// Contract ABI - Paste your full ABI here
-export const CONTRACT_ABI =[
+// Contract ABI - Complete and corrected
+export const CONTRACT_ABI = [
   {
     "inputs": [
       { "internalType": "address", "name": "_token", "type": "address" }
@@ -88,7 +88,6 @@ export const CONTRACT_ABI =[
     "name": "Transfer",
     "type": "event"
   },
-
   {
     "inputs": [
       { "internalType": "address", "name": "to", "type": "address" },
@@ -129,14 +128,15 @@ export const CONTRACT_ABI =[
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "payer", "type": "address" },
-      { "internalType": "uint256", "name": "invoiceNumber", "type": "uint256" }
+      { "internalType": "address", "name": "_user", "type": "address" },
+      { "internalType": "uint256", "name": "_tokenId", "type": "uint256" }
     ],
     "name": "getPaymentInfo",
     "outputs": [
       {
         "components": [
-          { "internalType": "address", "name": "token", "type": "address" },
+          { "internalType": "address", "name": "recipient", "type": "address" },
+          { "internalType": "address", "name": "payee", "type": "address" },
           { "internalType": "uint256", "name": "amount", "type": "uint256" },
           { "internalType": "bool", "name": "paid", "type": "bool" }
         ],
@@ -156,13 +156,13 @@ export const CONTRACT_ABI =[
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "address", "name": "user", "type": "address" }],
+    "inputs": [{ "internalType": "address", "name": "_user", "type": "address" }],
     "name": "getUserInfo",
     "outputs": [
       {
         "components": [
-          { "internalType": "string", "name": "name", "type": "string" },
-          { "internalType": "bool", "name": "registered", "type": "bool" }
+          { "internalType": "address", "name": "user", "type": "address" },
+          { "internalType": "string", "name": "protfolioWebsite", "type": "string" }
         ],
         "internalType": "struct InvoiceNft.UserInfo",
         "name": "",
@@ -226,7 +226,7 @@ export const CONTRACT_ABI =[
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "string", "name": "userName", "type": "string" }],
+    "inputs": [{ "internalType": "string", "name": "_protfolioWebsite", "type": "string" }],
     "name": "registerUser",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -310,28 +310,5 @@ export const CONTRACT_ABI =[
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
-  },
-  {
-  "inputs": [
-    { "internalType": "address", "name": "_user", "type": "address" },
-    { "internalType": "uint256", "name": "_tokenId", "type": "uint256" }
-  ],
-  "name": "getPaymentInfo",
-  "outputs": [
-    {
-      "components": [
-        { "internalType": "address", "name": "recipient", "type": "address" },
-        { "internalType": "address", "name": "payee", "type": "address" },
-        { "internalType": "uint256", "name": "amount", "type": "uint256" },
-        { "internalType": "bool", "name": "paid", "type": "bool" }
-      ],
-      "internalType": "struct InvoiceNft.PaymentInfo",
-      "name": "",
-      "type": "tuple"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
+  }
 ];
-
