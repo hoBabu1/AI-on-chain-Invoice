@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import CreateInvoice from './pages/CreateInvoice';
 import Payee from './pages/Payee';
 import './App.css';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   const [walletAddress, setWalletAddress] = useState('');
@@ -88,7 +89,8 @@ function App() {
 
         {/* Navigation */}
         <nav className="navigation">
-          <Link to="/" className="nav-link">Register</Link>
+          <Link to="/" className="nav-link">Dashboard</Link>
+          <Link to="/register" className="nav-link">Register</Link>
           <Link to="/create-invoice" className="nav-link">Create Invoice</Link>
           <Link to="/payee" className="nav-link">Payee</Link>
         </nav>
@@ -96,7 +98,8 @@ function App() {
         {/* Main Content */}
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<Register walletAddress={walletAddress} />} />
+            <Route path="/" element={<Dashboard walletAddress={walletAddress} />} />
+            <Route path="/register" element={<Register walletAddress={walletAddress} />} />
             <Route path="/create-invoice" element={<CreateInvoice walletAddress={walletAddress} />} />
             <Route path="/payee" element={<Payee walletAddress={walletAddress} />} />
           </Routes>

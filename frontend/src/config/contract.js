@@ -310,6 +310,28 @@ export const CONTRACT_ABI =[
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
-  }
+  },
+  {
+  "inputs": [
+    { "internalType": "address", "name": "_user", "type": "address" },
+    { "internalType": "uint256", "name": "_tokenId", "type": "uint256" }
+  ],
+  "name": "getPaymentInfo",
+  "outputs": [
+    {
+      "components": [
+        { "internalType": "address", "name": "recipient", "type": "address" },
+        { "internalType": "address", "name": "payee", "type": "address" },
+        { "internalType": "uint256", "name": "amount", "type": "uint256" },
+        { "internalType": "bool", "name": "paid", "type": "bool" }
+      ],
+      "internalType": "struct InvoiceNft.PaymentInfo",
+      "name": "",
+      "type": "tuple"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}
 ];
 

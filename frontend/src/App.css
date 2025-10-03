@@ -1,5 +1,5 @@
-
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -151,6 +151,7 @@ html, body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -278,4 +279,263 @@ html, body {
   line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.dashboard-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-width: 1400px;
+  margin: 0 auto;
+  height: calc(100vh - 200px);
+  overflow: hidden;
+}
+
+.dashboard-title {
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1.5rem;
+  height: calc(100% - 80px);
+}
+
+.nft-section {
+  grid-column: 1 / -1;
+  overflow-y: auto;
+}
+
+.nft-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.checker-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.checker-form {
+  flex-grow: 1;
+}
+
+.dashboard-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  padding: 1.2rem;
+  color: white;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.section-title-compact {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+  text-align: left;
+}
+
+.refresh-btn-compact {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.refresh-btn-compact:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.refresh-btn-compact:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nft-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.nft-card-compact {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 1.2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  min-height: 100px;
+}
+
+.nft-card-compact:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.nft-id-compact {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+
+.nft-link-compact {
+  color: #ffd700;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.nft-link-compact:hover {
+  color: #ffed4e;
+  text-decoration: underline;
+}
+
+.loading-text-compact,
+.no-nfts-text-compact {
+  text-align: center;
+  padding: 2rem;
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
+.form-input-compact {
+  width: 100%;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  font-weight: 500;
+}
+
+.form-input-compact::placeholder {
+  color: #666;
+  opacity: 0.8;
+}
+
+.form-input-compact:focus {
+  outline: none;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+.btn-compact {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+  padding: 0.7rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.btn-compact:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-compact:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.info-text-compact {
+  font-size: 0.85rem;
+  text-align: center;
+  margin-bottom: 0.8rem;
+  opacity: 0.95;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem;
+  border-radius: 5px;
+}
+
+.result-compact {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-top: 0.8rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.paid-badge {
+  background: #28a745;
+}
+
+.unpaid-badge {
+  background: #dc3545;
+}
+
+.enabled-badge {
+  background: #28a745;
+}
+
+.disabled-badge {
+  background: #dc3545;
+}
+
+.registered-badge {
+  background: #28a745;
+}
+
+.unregistered-badge {
+  background: #dc3545;
+}
+
+.detail-compact {
+  font-size: 0.85rem;
+  margin: 0.3rem 0;
+  word-break: break-all;
+}
+
+.nft-grid-compact::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nft-grid-compact::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.nft-grid-compact::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+}
+
+.nft-grid-compact::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.7);
 }
