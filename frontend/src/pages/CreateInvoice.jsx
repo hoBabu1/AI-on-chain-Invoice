@@ -15,7 +15,8 @@ function CreateInvoice({ walletAddress }) {
   const [error, setError] = useState('');
 
   const MAX_ATTEMPTS = 5;
-  const BACKEND_URL = 'http://localhost:3001';
+  //const BACKEND_URL = 'http://localhost:3001';
+  const BACKEND_URL='https://ai-on-chain-invoice.onrender.com';
 
   const handleGenerateInvoice = async (e) => {
     e.preventDefault();
