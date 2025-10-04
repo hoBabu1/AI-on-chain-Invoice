@@ -1,5 +1,18 @@
+# Namaste 🙏
 # Ai-Invoice NFT 
 AI + Blockchain - **AI Writes It. Blockchain Proves It**
+
+## Table of Content 
+- [Overview](#overview)
+- [Demo Video](#demo-video)
+- [Prerequisite](#prerequisite-for-using-platform)
+- [Live On Vercel](#live-on-vercel)
+- [Problem](#problem)
+- [My Solution](#my-solution)
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Upcoming Feature](#upcoming-features)
+
 
 ## Overview
 AI-Invoice NFT is a decentralized application that combines artificial intelligence and blockchain technology to manage invoice  for freelancers. Generate invoices using natural language, mint them as NFTs for immutable proof of work, and accept cryptocurrency payments(as of now USDT is enabled).
@@ -75,6 +88,48 @@ When freelancers apply for job or look for new opportunities, they face challeng
 - **Token Support**: Check which tokens are enabled for payments
 - **User Registry**: Verify if users are registered on the platform
 
+## Detailed Guide 
+
+1. **Connect Wallet**
+
+- Click "Connect Wallet" on the top (right side)
+- Approve MetaMask connection
+
+2. **Register as User**
+
+- Navigate to "Register" page
+- Enter your portfolio website URL
+- Confirm transaction in MetaMask
+- Wait for blockchain confirmation
+
+3. **Create Invoice NFT**
+
+- Go to "Create Invoice" page
+- Describe your work in plain English
+- Review AI-generated invoice
+- Provide feedback or approve with "ok"
+- Confirm NFT minting in MetaMask
+
+4. **Accept Payment (Payee)**
+
+- Share your invoice NFT number with client
+- Client navigates to "Payee" page
+- Client enters:
+
+   - Your wallet address (recipient)
+   - Invoice number (NFT ID)
+   - Payment amount
+
+- Client approves USDT and confirms payment
+- Payment transfers directly to your wallet
+
+5. **Track Everything (Dashboard)**
+
+- View all your invoice NFTs
+- Check payment status by invoice number
+- Verify token support
+- Look up user registration info
+
 
 ## Upcoming Features
 - One Time fee for user's registration, to avoid spam
@@ -84,6 +139,8 @@ When freelancers apply for job or look for new opportunities, they face challeng
 - Dashboard for Payee 
 - Making UI more intutive
 - Gas optimization and auditing of smart contract before mainnet deployment
+
+# Built with ❤️ for the freelance community
 
 
 
