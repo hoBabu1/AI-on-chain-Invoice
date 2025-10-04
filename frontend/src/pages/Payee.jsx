@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ethers } from 'ethers';
-import { CONTRACT_ADDRESS, CONTRACT_ABI } from '../config/contract';
+import { CONTRACT_ADDRESS, CONTRACT_ABI , USDT_TOKEN_ADDRESS} from '../config/contract';
 
 // Standard ERC20 ABI (only the functions we need)
 const ERC20_ABI = [
@@ -8,7 +8,7 @@ const ERC20_ABI = [
   "function allowance(address owner, address spender) public view returns (uint256)"
 ];
 
-const TOKEN_ADDRESS = '0x0C5eFB8ec77E3464AB85C0564371Ec1E067F8546';
+const TOKEN_ADDRESS = USDT_TOKEN_ADDRESS;
 
 function Payee({ walletAddress }) {
   const [formData, setFormData] = useState({

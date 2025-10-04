@@ -1,6 +1,7 @@
 // Contract Address - Replace with your deployed contract address
 export const CONTRACT_ADDRESS = "0xFD88be1a2913010ce9770109c25441e2Ef06AB1F";
 
+export const USDT_TOKEN_ADDRESS = '0x0C5eFB8ec77E3464AB85C0564371Ec1E067F8546';
 export const POLYGON_NETWORK = {
   chainId: '0x13882', // 80002 in hex
   chainName: 'Polygon Amoy Testnet',

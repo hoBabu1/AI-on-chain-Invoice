@@ -13,10 +13,24 @@ function CreateInvoice({ walletAddress }) {
   const [tokenUri, setTokenUri] = useState('');
   const [transactionHash, setTransactionHash] = useState('');
   const [error, setError] = useState('');
+  
+  // Progress tracking
+  const [mintingStep, setMintingStep] = useState(0);
+  const [statusMessage, setStatusMessage] = useState('');
 
   const MAX_ATTEMPTS = 5;
-  //const BACKEND_URL = 'http://localhost:3001';
-  const BACKEND_URL='https://ai-on-chain-invoice.onrender.com';
+  const BACKEND_URL = 'https://ai-on-chain-invoice.onrender.com';
+
+  const MINTING_STEPS = [
+    { id: 1, label: 'AI Processing Invoice', emoji: '🤖' },
+    { id: 2, label: 'Uploading to IPFS', emoji: '📤' },
+    { id: 3, label: 'IPFS Upload Complete', emoji: '✅' },
+    { id: 4, label: 'Preparing NFT Mint', emoji: '📝' },
+    { id: 5, label: 'Waiting for MetaMask', emoji: '🦊' },
+    { id: 6, label: 'Transaction Sent', emoji: '🚀' },
+    { id: 7, label: 'Mining on Blockchain', emoji: '⛏️' },
+    { id: 8, label: 'NFT Minted Successfully', emoji: '🎉' }
+  ];
 
   const handleGenerateInvoice = async (e) => {
     e.preventDefault();
@@ -49,7 +63,6 @@ function CreateInvoice({ walletAddress }) {
       if (response.data.success) {
         const invoice = response.data.invoice;
         
-        // Ensure amount is a number
         if (invoice.amount) {
           invoice.amount = parseFloat(invoice.amount);
         }
@@ -97,7 +110,6 @@ function CreateInvoice({ walletAddress }) {
       if (response.data.success) {
         const invoice = response.data.invoice;
         
-        // Ensure amount is a number
         if (invoice.amount) {
           invoice.amount = parseFloat(invoice.amount);
         }
@@ -119,8 +131,18 @@ function CreateInvoice({ walletAddress }) {
     setIsProcessing(true);
     setError('');
     setCurrentStep('uploading');
+    setMintingStep(0);
 
     try {
+      // Step 1: AI Processing
+      setMintingStep(1);
+      setStatusMessage('AI has processed your invoice successfully!');
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // Step 2: Uploading to IPFS
+      setMintingStep(2);
+      setStatusMessage('Uploading invoice data to IPFS...');
+      
       console.log('Uploading invoice to IPFS:', generatedInvoice);
 
       const response = await axios.post(`${BACKEND_URL}/api/upload-to-ipfs`, {
@@ -131,6 +153,11 @@ function CreateInvoice({ walletAddress }) {
 
       if (response.data.success) {
         const { tokenUri: uri, amount } = response.data;
+        
+        // Step 3: IPFS Complete
+        setMintingStep(3);
+        setStatusMessage(`IPFS upload complete! CID: ${uri.split('/').pop()}`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
         console.log('Token URI:', uri);
         console.log('Amount:', amount);
@@ -144,6 +171,7 @@ function CreateInvoice({ walletAddress }) {
       setError('Failed to upload to IPFS');
       setCurrentStep('reviewing');
       setIsProcessing(false);
+      setMintingStep(0);
     }
   };
 
@@ -155,41 +183,60 @@ function CreateInvoice({ walletAddress }) {
         throw new Error('MetaMask not installed');
       }
 
-      // Ensure amount is valid
       if (!amount || isNaN(amount) || amount <= 0) {
         throw new Error(`Invalid amount: ${amount}`);
       }
 
+      // Step 4: Preparing
+      setMintingStep(4);
+      setStatusMessage('Preparing NFT mint transaction...');
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       console.log('Starting minting process...');
       console.log('Token URI:', uri);
-      console.log('Amount (raw):', amount);
-      console.log('Amount type:', typeof amount);
+      console.log('Amount:', amount);
 
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-      // Convert amount to BigInt for wei
       const amountInWei = ethers.parseEther(amount.toString());
       
       console.log('Amount in wei:', amountInWei.toString());
-      console.log('Calling contract.mintNft...');
+
+      // Step 5: Waiting for MetaMask
+      setMintingStep(5);
+      setStatusMessage('Please confirm transaction in MetaMask...');
 
       const tx = await contract.mintNft(uri, amountInWei);
       
-      console.log('Transaction sent:', tx.hash);
+      // Step 6: Transaction Sent
+      setMintingStep(6);
+      setStatusMessage(`Transaction sent! Hash: ${tx.hash.substring(0, 10)}...`);
       setTransactionHash(tx.hash);
+      
+      console.log('Transaction sent:', tx.hash);
 
-      console.log('Waiting for confirmation...');
+      // Step 7: Mining
+      setMintingStep(7);
+      setStatusMessage('Waiting for blockchain confirmation...');
+
       const receipt = await tx.wait();
       
+      // Step 8: Complete
+      setMintingStep(8);
+      setStatusMessage('NFT minted successfully! 🎉');
+      
       console.log('Transaction confirmed!', receipt);
+      
+      await new Promise(resolve => setTimeout(resolve, 1500));
       setCurrentStep('success');
 
     } catch (err) {
       console.error('Minting error:', err);
       setError(err.message || 'Failed to mint NFT');
       setCurrentStep('reviewing');
+      setMintingStep(0);
     } finally {
       setIsProcessing(false);
     }
@@ -204,6 +251,8 @@ function CreateInvoice({ walletAddress }) {
     setError('');
     setAttempts(0);
     setCurrentStep('input');
+    setMintingStep(0);
+    setStatusMessage('');
   };
 
   return (
@@ -237,6 +286,23 @@ function CreateInvoice({ walletAddress }) {
                 disabled={!walletAddress || isProcessing}
                 style={{ minHeight: '150px' }}
               />
+              <button
+                type="button"
+                onClick={() => setInvoiceText("I am John, did web development work for Alice for 100 dollars, worked 8 hours on her portfolio website")}
+                style={{
+                  background: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '5px',
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  marginTop: '0.5rem'
+                }}
+                disabled={!walletAddress || isProcessing}
+              >
+                📝 Try Demo Data
+              </button>
             </div>
 
             <button
@@ -310,42 +376,81 @@ function CreateInvoice({ walletAddress }) {
         </div>
       )}
 
-      {currentStep === 'uploading' && (
+      {(currentStep === 'uploading' || currentStep === 'minting') && mintingStep > 0 && (
         <div className="form-box">
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <h3>Uploading to IPFS...</h3>
-            <div className="spinner"></div>
-          </div>
-        </div>
-      )}
+          <div className="progress-container">
+            <h3 style={{ textAlign: 'center', marginBottom: '2rem', color: 'white' }}>
+              {mintingStep < 4 ? '📤 Uploading to IPFS' : '🎨 Minting NFT'}
+            </h3>
+            
+            <div className="progress-bar-wrapper">
+              <div 
+                className="progress-bar-fill" 
+                style={{ width: `${(mintingStep / MINTING_STEPS.length) * 100}%` }}
+              ></div>
+            </div>
+            
+            <div className="steps-grid">
+              {MINTING_STEPS.map((step) => (
+                <div 
+                  key={step.id} 
+                  className={`step-item-grid ${mintingStep >= step.id ? 'active' : ''} ${mintingStep > step.id ? 'completed' : ''}`}
+                >
+                  <div className="step-circle-grid">
+                    {mintingStep > step.id ? '✓' : step.emoji}
+                  </div>
+                  <div className="step-label-grid">{step.label}</div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="status-message">
+              {statusMessage}
+            </div>
 
-      {currentStep === 'minting' && (
-        <div className="form-box">
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <h3>Minting NFT...</h3>
-            <p>Confirm transaction in MetaMask</p>
-            {transactionHash && (
-              <p style={{ fontSize: '12px', wordBreak: 'break-all' }}>
-                TX: {transactionHash}
-              </p>
+            {transactionHash && mintingStep >= 6 && (
+              <div style={{ 
+                textAlign: 'center', 
+                marginTop: '1rem',
+                fontSize: '0.85rem',
+                wordBreak: 'break-all',
+                background: 'rgba(255, 255, 255, 0.1)',
+                padding: '0.5rem',
+                borderRadius: '5px'
+              }}>
+                <strong>TX Hash:</strong> {transactionHash}
+              </div>
             )}
-            <div className="spinner"></div>
           </div>
         </div>
       )}
 
       {currentStep === 'success' && (
         <div className="form-box">
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <h3 style={{ color: '#28a745', fontSize: '32px' }}>Success!</h3>
-            <p>Invoice NFT minted successfully</p>
+          <div style={{ textAlign: 'center', padding: '40px' }} className="success-animation-box">
+            <div className="success-checkmark">✓</div>
+            <h3 style={{ color: '#28a745', fontSize: '32px', marginTop: '1rem' }}>Success!</h3>
+            <p style={{ fontSize: '18px', margin: '1rem 0' }}>Invoice NFT minted successfully</p>
             
             <div style={{ background: '#f5f5f5', padding: '20px', borderRadius: '8px', marginTop: '20px', textAlign: 'left' }}>
               <p><strong>Token URI:</strong></p>
-              <p style={{ fontSize: '12px', wordBreak: 'break-all', marginBottom: '15px' }}>{tokenUri}</p>
+              <p style={{ fontSize: '12px', wordBreak: 'break-all', marginBottom: '15px' }}>
+                <a href={tokenUri} target="_blank" rel="noopener noreferrer" style={{ color: '#667eea' }}>
+                  {tokenUri}
+                </a>
+              </p>
               
               <p><strong>Transaction:</strong></p>
-              <p style={{ fontSize: '12px', wordBreak: 'break-all', marginBottom: '15px' }}>{transactionHash}</p>
+              <p style={{ fontSize: '12px', wordBreak: 'break-all', marginBottom: '15px' }}>
+                <a 
+                  href={`https://amoy.polygonscan.com/tx/${transactionHash}`}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ color: '#667eea' }}
+                >
+                  {transactionHash}
+                </a>
+              </p>
               
               <p><strong>Amount:</strong> ${generatedInvoice?.amount}</p>
             </div>
@@ -361,20 +466,162 @@ function CreateInvoice({ walletAddress }) {
         </div>
       )}
 
-      <style jsx>{`
-        .spinner {
-          border: 4px solid #f3f3f3;
-          border-top: 4px solid #3498db;
-          border-radius: 50%;
-          width: 40px;
-          height: 40px;
-          animation: spin 1s linear infinite;
-          margin: 20px auto;
+      <style>{`
+        .progress-container {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 15px;
+          padding: 2rem;
+          margin: 2rem 0;
+          color: white;
         }
 
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+        .progress-bar-wrapper {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 10px;
+          height: 12px;
+          overflow: hidden;
+          margin-bottom: 2rem;
+        }
+
+        .progress-bar-fill {
+          background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
+          height: 100%;
+          transition: width 0.5s ease;
+          border-radius: 10px;
+          box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+
+        .steps-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .step-item-grid {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          opacity: 0.4;
+          transition: all 0.3s ease;
+        }
+
+        .step-item-grid.active {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+
+        .step-item-grid.completed {
+          opacity: 0.7;
+        }
+
+        .step-circle-grid {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+          margin-bottom: 0.5rem;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          transition: all 0.3s ease;
+        }
+
+        .step-item-grid.active .step-circle-grid {
+          background: rgba(255, 255, 255, 0.4);
+          border-color: white;
+          box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+          animation: pulse 1.5s infinite;
+        }
+
+        .step-item-grid.completed .step-circle-grid {
+          background: #22c55e;
+          border-color: #22c55e;
+        }
+
+        .step-label-grid {
+          font-size: 0.7rem;
+          text-align: center;
+          font-weight: 500;
+          line-height: 1.2;
+        }
+
+        .status-message {
+          text-align: center;
+          font-size: 1rem;
+          font-weight: 600;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.15);
+          border-radius: 8px;
+          animation: fadeIn 0.5s ease;
+          min-height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .success-animation-box {
+          animation: successBounce 0.6s ease;
+        }
+
+        .success-checkmark {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          background: #28a745;
+          color: white;
+          font-size: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto;
+          animation: checkmarkPop 0.6s ease;
+          box-shadow: 0 0 30px rgba(40, 167, 69, 0.5);
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.1);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes successBounce {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.05);
+          }
+        }
+
+        @keyframes checkmarkPop {
+          0% {
+            transform: scale(0);
+            opacity: 0;
+          }
+          50% {
+            transform: scale(1.2);
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
         }
 
         .alert {
@@ -391,6 +638,43 @@ function CreateInvoice({ walletAddress }) {
         .alert-error {
           background-color: #f8d7da;
           color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+          .steps-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .step-circle-grid {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+          }
+
+          .step-label-grid {
+            font-size: 0.65rem;
+          }
+
+          .progress-container {
+            padding: 1.5rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .steps-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+          }
+
+          .step-circle-grid {
+            width: 35px;
+            height: 35px;
+            font-size: 1rem;
+          }
+
+          .step-label-grid {
+            font-size: 0.6rem;
+          }
         }
       `}</style>
     </div>
