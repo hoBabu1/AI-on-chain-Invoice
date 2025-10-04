@@ -11,6 +11,7 @@ AI + Blockchain - **AI Writes It. Blockchain Proves It**
 - [My Solution](#my-solution)
 - [Tech Stack](#tech-stack)
 - [Features](#features)
+- [Detailed Guide](#detailed-guide)
 - [Upcoming Feature](#upcoming-features)
 
 
