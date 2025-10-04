@@ -1,7 +1,11 @@
 # Ai-Invoice NFT 
+AI + Blockchain
+- AI - Generate invioce
+- Blockchain - Shows proof of work which is immutable 
 
 ## Demo Video
 ## Live on Website 
+
 https://ai-on-chain-invoice.vercel.app/
 
 ## Prerequisite
