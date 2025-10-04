@@ -1,7 +1,13 @@
 # Ai-Invoice NFT 
 
 ## Demo Video
-## Live Website Link
+## Live Website Link - https://ai-on-chain-invoice.vercel.app/
+
+## Prerequisite
+- Install Metamask - [Chrome Web Store](https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en)
+- Set up Metamask Account - [Guide](https://support.metamask.io/start/creating-a-new-wallet/)
+- Polygon Amoy Testnet Faucet - [Polygon Fucet](https://faucet.polygon.technology/)
+- USDT for payment - Text me on [Telegram](https://t.me/ho_babu), Faucet page for this will be live soon. 
 ## Problem
 When freelancer goes for the job interview or goes to a new client, they are asked 
 - how many projects you have done
