@@ -1,5 +1,5 @@
 // Contract Address - Replace with your deployed contract address
-export const CONTRACT_ADDRESS = "0xc45d948467Dd39278a456D4341C00C14F31300b2";
+export const CONTRACT_ADDRESS = "0xFD88be1a2913010ce9770109c25441e2Ef06AB1F";
 
 export const POLYGON_NETWORK = {
   chainId: '0x13882', // 80002 in hex
