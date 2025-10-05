@@ -21,7 +21,7 @@ AI-Invoice NFT is a decentralized application that combines artificial intellige
 ## Demo Video
 Before jumping to the video, Please go to [Problem](#problem) and [My Solution](#my-solution) to get the context. In video I was not able to explain about the the project due to 3 min restriction on video length.
 
-[YouTube](https://youtu.be/uZyOd4QUZdE?si=DrB9VXw_hXo5-m49)
+[Click to see Demo Video](https://youtu.be/uZyOd4QUZdE?si=DrB9VXw_hXo5-m49)
 
 ## Prerequisite for using platform 
 - Install Metamask - [Chrome Web Store](https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en)
