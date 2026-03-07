@@ -2,6 +2,33 @@
 export const CONTRACT_ADDRESS = "0xFD88be1a2913010ce9770109c25441e2Ef06AB1F";
 
 export const USDT_TOKEN_ADDRESS = '0x0C5eFB8ec77E3464AB85C0564371Ec1E067F8546';
+
+export const USDT_ABI = [
+  {
+    "inputs": [
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "mint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
+    "name": "balanceOf",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "decimals",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+];
 export const POLYGON_NETWORK = {
   chainId: '0x13882', // 80002 in hex
   chainName: 'Polygon Amoy Testnet',

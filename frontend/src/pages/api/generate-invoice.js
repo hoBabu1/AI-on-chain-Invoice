@@ -1,9 +1,7 @@
 // frontend/pages/api/generate-invoice.js
-import Cerebras from '@cerebras/cerebras_cloud_sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const client = new Cerebras({
-  apiKey: process.env.CEREBRAS_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function shouldAIAssume(userInput) {
   const assumeKeywords = [
@@ -26,14 +24,12 @@ Respond with ONLY "YES" if they want you to make assumptions/calculations, or "N
 
 Response (YES or NO):`;
 
-    const resp = await client.chat.completions.create({
-      model: "llama3.1-8b",
-      messages: [{ role: "user", content: intentCheckPrompt }],
-      temperature: 0.1,
-      max_tokens: 10
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-1.5-flash',
+      generationConfig: { temperature: 0.1, maxOutputTokens: 10 }
     });
-
-    return resp.choices[0].message.content.trim().toUpperCase().includes('YES');
+    const result = await model.generateContent(intentCheckPrompt);
+    return result.response.text().trim().toUpperCase().includes('YES');
   } catch (error) {
     return false;
   }
@@ -77,17 +73,13 @@ RESPONSE REQUIREMENTS:
 - No explanations
 - Use null for missing values`;
 
-  const resp = await client.chat.completions.create({
-    model: "llama3.1-8b",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userInvoice }
-    ],
-    temperature: 0.1,
-    max_tokens: 500
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+    systemInstruction: systemPrompt,
+    generationConfig: { temperature: 0.1, maxOutputTokens: 500 }
   });
-
-  return resp.choices[0].message.content;
+  const result = await model.generateContent(userInvoice);
+  return result.response.text();
 }
 
 async function updateInvoice(currentInvoice, userFeedback) {
@@ -107,17 +99,13 @@ Update ONLY the fields mentioned in feedback. Return complete updated JSON in th
   "workingHours": <number or null>
 }`;
 
-  const resp = await client.chat.completions.create({
-    model: "llama3.1-8b",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: `Update: ${userFeedback}` }
-    ],
-    temperature: 0.1,
-    max_tokens: 500
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+    systemInstruction: systemPrompt,
+    generationConfig: { temperature: 0.1, maxOutputTokens: 500 }
   });
-
-  return resp.choices[0].message.content;
+  const result = await model.generateContent(`Update: ${userFeedback}`);
+  return result.response.text();
 }
 
 export default async function handler(req, res) {

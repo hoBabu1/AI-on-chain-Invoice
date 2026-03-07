@@ -103,7 +103,10 @@ function Register({ walletAddress }) {
       console.log('Portfolio Website:', portfolioWebsite);
       console.log('User Address:', walletAddress);
 
-      const tx = await contract.registerUser(portfolioWebsite);
+      const tx = await contract.registerUser(portfolioWebsite, {
+        maxPriorityFeePerGas: ethers.parseUnits('25', 'gwei'),
+        maxFeePerGas: ethers.parseUnits('50', 'gwei'),
+      });
       
       // Step 3: Transaction Sent
       setCurrentStep(3);
