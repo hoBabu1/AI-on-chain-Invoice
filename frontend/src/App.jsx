@@ -5,7 +5,6 @@ import CreateInvoice from './pages/CreateInvoice';
 import Payee from './pages/Payee';
 import './App.css';
 import Dashboard from './pages/Dashboard';
-import Faucet from './pages/Faucet';
 
 function App() {
   const [walletAddress, setWalletAddress] = useState('');
@@ -94,7 +93,6 @@ function App() {
             <Link to="/register" className="nav-link">Register</Link>
             <Link to="/create-invoice" className="nav-link">Create Invoice</Link>
             <Link to="/payee" className="nav-link">Payee</Link>
-            <Link to="/faucet" className="nav-link">Faucet</Link>
           </div>
 
         </nav>
@@ -106,7 +104,6 @@ function App() {
             <Route path="/register" element={<Register walletAddress={walletAddress} />} />
             <Route path="/create-invoice" element={<CreateInvoice walletAddress={walletAddress} />} />
             <Route path="/payee" element={<Payee walletAddress={walletAddress} />} />
-            <Route path="/faucet" element={<Faucet walletAddress={walletAddress} />} />
           </Routes>
         </main>
       </div>
