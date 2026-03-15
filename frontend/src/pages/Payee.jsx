@@ -91,8 +91,13 @@ function Payee({ walletAddress }) {
       setCurrentStep(2);
       setStatusMessage('Approving USDT token spending...');
       
+      const feeData = await provider.getFeeData();
+      const maxPriorityFee = feeData.maxPriorityFeePerGas * 2n;
+      const maxFee = feeData.maxFeePerGas * 2n;
+      const gasOverrides = { maxPriorityFeePerGas: maxPriorityFee, maxFeePerGas: maxFee };
+
       const tokenContract = new ethers.Contract(TOKEN_ADDRESS, ERC20_ABI, signer);
-      const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountInWei);
+      const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountInWei, gasOverrides);
       
       console.log('Approval transaction sent:', approveTx.hash);
       
@@ -114,7 +119,8 @@ function Payee({ walletAddress }) {
         formData.recipient,
         TOKEN_ADDRESS,
         parseInt(formData.invoiceNumber),
-        amountInWei
+        amountInWei,
+        gasOverrides
       );
       
       // Step 5: Payment Sent
