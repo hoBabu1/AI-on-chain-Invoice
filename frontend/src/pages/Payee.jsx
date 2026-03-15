@@ -92,8 +92,10 @@ function Payee({ walletAddress }) {
       setStatusMessage('Approving USDT token spending...');
       
       const feeData = await provider.getFeeData();
-      const maxPriorityFee = feeData.maxPriorityFeePerGas * 2n;
-      const maxFee = feeData.maxFeePerGas * 2n;
+      const minTip = ethers.parseUnits('30', 'gwei');
+      const minFee = ethers.parseUnits('50', 'gwei');
+      const maxPriorityFee = feeData.maxPriorityFeePerGas * 2n > minTip ? feeData.maxPriorityFeePerGas * 2n : minTip;
+      const maxFee = feeData.maxFeePerGas * 2n > minFee ? feeData.maxFeePerGas * 2n : minFee;
       const gasOverrides = { maxPriorityFeePerGas: maxPriorityFee, maxFeePerGas: maxFee };
 
       const tokenContract = new ethers.Contract(TOKEN_ADDRESS, ERC20_ABI, signer);
