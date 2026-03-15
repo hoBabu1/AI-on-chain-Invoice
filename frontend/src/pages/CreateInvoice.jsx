@@ -208,7 +208,10 @@ function CreateInvoice({ walletAddress }) {
       setMintingStep(5);
       setStatusMessage('Please confirm transaction in MetaMask...');
 
-      const tx = await contract.mintNft(uri, amountInWei);
+      const tx = await contract.mintNft(uri, amountInWei, {
+        maxPriorityFeePerGas: ethers.parseUnits('25', 'gwei'),
+        maxFeePerGas: ethers.parseUnits('50', 'gwei'),
+      });
       
       // Step 6: Transaction Sent
       setMintingStep(6);

@@ -2,7 +2,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import Cerebras from '@cerebras/cerebras_cloud_sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import FormData from 'form-data';
 import fetch from 'node-fetch';
 
@@ -12,9 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const client = new Cerebras({
-  apiKey: process.env.CEREBRAS_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const PINATA_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiI1YjM2MzczYS02OTdlLTQ5YWUtYmRjYy02MzM1NTE5ZTc2M2YiLCJlbWFpbCI6ImFtYW5rc2FoMTIzQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxLCJpZCI6IkZSQTEifSx7ImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxLCJpZCI6Ik5ZQzEifV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmxlZCI6ZmFsc2UsInN0YXR1cyI6IkFDVElWRSJ9LCJhdXRoZW50aWNhdGlvblR5cGUiOiJzY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiJlMjUyOWM2ZWQ3YTY2N2QwNDY5ZSIsInNjb3BlZEtleVNlY3JldCI6IjA0NDFhMzdiZmZhMGI2NjdhMzk2YmI0MDI0MWQ3NGNmNzgwYTZmYTFmMzlhZGNlZWZiMDhiNDE5ZGIxMjVlNDQiLCJleHAiOjE3OTA4NDAyMTB9.Gkh9lQYE2yQxsGm8KcsfKZAt7QAa3JeqOJgKPZ2BZOA";
 
@@ -133,14 +131,12 @@ User message: "${userInput}"
 
 Respond with ONLY "YES" or "NO".`;
 
-    const resp = await client.chat.completions.create({
-      model: "llama3.1-8b",
-      messages: [{ role: "user", content: intentCheckPrompt }],
-      temperature: 0.1,
-      max_tokens: 10
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-1.5-flash',
+      generationConfig: { temperature: 0.1, maxOutputTokens: 10 }
     });
-
-    return resp.choices[0].message.content.trim().toUpperCase().includes('YES');
+    const result = await model.generateContent(intentCheckPrompt);
+    return result.response.text().trim().toUpperCase().includes('YES');
   } catch (error) {
     return false;
   }
@@ -174,17 +170,13 @@ ${allowAssumptions ? 'ASSUMPTION MODE: Estimate missing values based on work typ
 
 Return ONLY JSON, no explanations.`;
 
-  const resp = await client.chat.completions.create({
-    model: "llama3.1-8b",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userInvoice }
-    ],
-    temperature: 0.1,
-    max_tokens: 500
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+    systemInstruction: systemPrompt,
+    generationConfig: { temperature: 0.1, maxOutputTokens: 500 }
   });
-
-  return resp.choices[0].message.content;
+  const result = await model.generateContent(userInvoice);
+  return result.response.text();
 }
 
 async function updateInvoice(currentInvoice, userFeedback) {
@@ -220,17 +212,13 @@ Return complete updated JSON in this format:
 
 Return ONLY JSON, no explanations.`;
 
-  const resp = await client.chat.completions.create({
-    model: "llama3.1-8b",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: `Update: ${userFeedback}` }
-    ],
-    temperature: 0.1,
-    max_tokens: 500
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+    systemInstruction: systemPrompt,
+    generationConfig: { temperature: 0.1, maxOutputTokens: 500 }
   });
-
-  return resp.choices[0].message.content;
+  const result = await model.generateContent(`Update: ${userFeedback}`);
+  return result.response.text();
 }
 
 const PORT = 3001;

@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI-Invoice NFT — Poster</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f4f6fb;
+    --surface2:#eaf0ff;
+    --border:  #d0daf0;
+    --ink:     #0f1729;
+    --ink2:    #3a4a6b;
+    --muted:   #6b7fa8;
+
+    --purple:  #6d28d9;
+    --purple-l:#ede9fe;
+    --cyan:    #0891b2;
+    --cyan-l:  #e0f7fa;
+    --green:   #059669;
+    --green-l: #d1fae5;
+    --amber:   #d97706;
+    --amber-l: #fef3c7;
+    --red:     #dc2626;
+    --red-l:   #fee2e2;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    width: 1200px;
+    margin: 0 auto;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .poster { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+
+  /* ═══ HEADER ═══ */
+  .header {
+    background: linear-gradient(135deg, #042f4b 0%, #064663 50%, #0a3d62 100%);
+    border-radius: 14px;
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--purple), var(--cyan), var(--green), var(--amber));
+  }
+
+  /* decorative circles */
+  .header::after {
+    content: '';
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(109,40,217,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 18px; }
+
+  .logo {
+    width: 68px; height: 68px;
+    background: linear-gradient(135deg, var(--purple), var(--cyan));
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+
+  .h-title {
+    font-size: 34px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  .h-title .accent { color: #a78bfa; }
+
+  .h-sub {
+    font-size: 13px;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: 2.5px;
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .h-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+
+  .tag {
+    padding: 3px 11px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-family: 'JetBrains Mono', monospace;
+    border: 1.5px solid;
+  }
+
+  .tg1 { border-color: #a78bfa; color: #c4b5fd; background: rgba(167,139,250,0.12); }
+  .tg2 { border-color: #67e8f9; color: #67e8f9; background: rgba(103,232,249,0.1); }
+  .tg3 { border-color: #6ee7b7; color: #6ee7b7; background: rgba(110,231,183,0.1); }
+  .tg4 { border-color: #fcd34d; color: #fcd34d; background: rgba(252,211,77,0.1); }
+
+  .h-right { flex-shrink: 0; text-align: right; }
+
+  .dapp-badge {
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 12px 18px;
+    text-align: right;
+  }
+
+  .dapp-badge .dl { font-size: 9px; color: #94a3b8; letter-spacing: 2px; font-family: 'JetBrains Mono', monospace; }
+  .dapp-badge .dm { font-size: 20px; font-weight: 800; color: #fff; margin-top: 3px; }
+  .dapp-badge .ds { font-size: 10px; color: #94a3b8; margin-top: 3px; font-family: 'JetBrains Mono', monospace; }
+
+  /* ═══ STATS ROW ═══ */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  .stat {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 10px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+  }
+
+  .stat:nth-child(1)::before { background: var(--purple); }
+  .stat:nth-child(2)::before { background: var(--cyan); }
+  .stat:nth-child(3)::before { background: var(--green); }
+  .stat:nth-child(4)::before { background: var(--amber); }
+  .stat:nth-child(5)::before { background: var(--red); }
+
+  .stat-num { font-size: 26px; font-weight: 900; line-height: 1; }
+  .stat-lbl { font-size: 9px; font-weight: 700; color: var(--muted); margin-top: 5px; letter-spacing: 0.8px; font-family: 'JetBrains Mono', monospace; }
+
+  /* ═══ MAIN GRID ═══ */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 310px 1fr 290px;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .col { display: flex; flex-direction: column; gap: 12px; }
+
+  /* ═══ PANEL ═══ */
+  .panel {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .ph {
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    font-family: 'JetBrains Mono', monospace;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .ph-purple { background: var(--purple-l); color: var(--purple); border-bottom-color: #c4b5fd; }
+  .ph-cyan   { background: var(--cyan-l);   color: var(--cyan);   border-bottom-color: #a5f3fc; }
+  .ph-green  { background: var(--green-l);  color: var(--green);  border-bottom-color: #6ee7b7; }
+  .ph-amber  { background: var(--amber-l);  color: var(--amber);  border-bottom-color: #fcd34d; }
+  .ph-red    { background: var(--red-l);    color: var(--red);    border-bottom-color: #fca5a5; }
+
+  .pb { padding: 12px 14px; }
+
+  /* List items */
+  .li {
+    display: flex; gap: 9px; align-items: flex-start;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ink2);
+  }
+
+  .li:last-child { border-bottom: none; }
+
+  .mark { font-size: 14px; flex-shrink: 0; margin-top: 1px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .mark-r { color: var(--red); }
+  .mark-g { color: var(--green); }
+
+  /* Steps */
+  .snum {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    color: #fff;
+    margin-top: 1px;
+  }
+
+  .stitle { font-weight: 700; font-size: 13px; color: var(--ink); display: block; margin-bottom: 2px; }
+  .sdesc  { font-size: 12px; color: var(--ink2); }
+
+  /* Flow diagram */
+  .flow { padding: 12px; display: flex; flex-direction: column; align-items: center; }
+
+  .fn {
+    width: 100%;
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+  }
+
+  .fn-icon  { font-size: 18px; margin-bottom: 3px; }
+  .fn-title { font-size: 14px; font-weight: 800; }
+  .fn-sub   { font-size: 10.5px; color: var(--ink2); margin-top: 3px; font-family: 'JetBrains Mono', monospace; line-height: 1.4; }
+
+  .fn-p { background: var(--purple-l); border: 2px solid #c4b5fd; }
+  .fn-c { background: var(--cyan-l);   border: 2px solid #a5f3fc; }
+  .fn-g { background: var(--green-l);  border: 2px solid #6ee7b7; }
+  .fn-a { background: var(--amber-l);  border: 2px solid #fcd34d; }
+
+  .fn-p .fn-title { color: var(--purple); }
+  .fn-c .fn-title { color: var(--cyan); }
+  .fn-g .fn-title { color: var(--green); }
+  .fn-a .fn-title { color: var(--amber); }
+
+  .arr {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+  }
+
+  .arr::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 6px;
+    left: 50%; transform: translateX(-50%);
+    width: 2px;
+    background: linear-gradient(180deg, var(--cyan), rgba(8,145,178,0.15));
+  }
+
+  .arr::after {
+    content: '▼';
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    color: var(--cyan); font-size: 10px;
+  }
+
+  .arr-tag {
+    position: absolute;
+    right: 0; top: 50%; transform: translateY(-50%);
+    background: var(--cyan-l);
+    border: 1.5px solid #a5f3fc;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--cyan);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Tech pills */
+  .tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 10px; }
+
+  .tech-card {
+    background: var(--bg);
+    border-radius: 7px;
+    padding: 9px 11px;
+    border-left: 3px solid;
+    border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tc1 { border-left-color: var(--purple); }
+  .tc2 { border-left-color: var(--cyan); }
+  .tc3 { border-left-color: var(--green); }
+  .tc4 { border-left-color: var(--amber); }
+
+  .tc-name { font-size: 9px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px; }
+  .tc-pills { display: flex; flex-wrap: wrap; gap: 3px; }
+
+  .pill {
+    padding: 2px 8px; border-radius: 3px; font-size: 10.5px; font-weight: 600;
+    background: var(--surface2); color: var(--ink2);
+    border: 1px solid var(--border);
+  }
+
+  /* Blockchain basics */
+  .bc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 10px; }
+
+  .bc-card {
+    background: var(--bg);
+    border-radius: 7px;
+    padding: 10px 11px;
+    border: 1.5px solid var(--border);
+    border-top: 3px solid;
+  }
+
+  .bc1t { border-top-color: var(--purple); }
+  .bc2t { border-top-color: var(--cyan); }
+  .bc3t { border-top-color: var(--green); }
+  .bc4t { border-top-color: var(--amber); }
+  .bc5t { border-top-color: var(--red); }
+  .bc6t { border-top-color: #7c3aed; }
+
+  .bc-term {
+    font-size: 10px; font-weight: 800; font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 4px; letter-spacing: 0.5px;
+  }
+
+  .bc1t .bc-term { color: var(--purple); }
+  .bc2t .bc-term { color: var(--cyan); }
+  .bc3t .bc-term { color: var(--green); }
+  .bc4t .bc-term { color: var(--amber); }
+  .bc5t .bc-term { color: var(--red); }
+  .bc6t .bc-term { color: #7c3aed; }
+
+  .bc-def { font-size: 11px; color: var(--ink2); line-height: 1.45; }
+
+  /* Features */
+  .feat { padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .feat:last-child { border-bottom: none; }
+  .feat-t { font-size: 14px; font-weight: 800; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+  .feat-d { font-size: 11.5px; color: var(--ink2); line-height: 1.4; }
+
+  /* Architecture */
+  .arch { padding: 10px; display: flex; flex-direction: column; align-items: center; }
+
+  .an {
+    width: 100%; padding: 8px 12px;
+    border-radius: 7px; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .aa {
+    height: 16px; width: 2px;
+    background: linear-gradient(180deg, var(--cyan), rgba(8,145,178,0.1));
+    margin: 0 auto; position: relative;
+  }
+  .aa::after { content: '▼'; position: absolute; bottom: -9px; left: 50%; transform: translateX(-50%); color: var(--cyan); font-size: 8px; }
+
+  /* NFT states */
+  .nft-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 10px; }
+  .nft-st {
+    background: var(--bg);
+    border-radius: 7px; padding: 10px; text-align: center;
+    border: 1.5px solid var(--border);
+  }
+  .nft-v { font-size: 15px; font-weight: 900; font-family: 'JetBrains Mono', monospace; line-height: 1; }
+  .nft-l { font-size: 9.5px; color: var(--muted); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+  /* Upcoming */
+  .up { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; color: var(--ink2); }
+  .up:last-child { border-bottom: none; }
+  .up-d { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+
+  /* Payment flow */
+  .pf {
+    display: flex; align-items: center; gap: 5px;
+    flex-wrap: wrap; padding: 10px 12px;
+    font-size: 11px; font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+  }
+
+  .pn { padding: 4px 10px; border-radius: 4px; font-size: 10.5px; font-weight: 700; }
+  .pa { color: var(--cyan); font-size: 16px; }
+
+  /* Smart contract fns */
+  .scfn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 10px; }
+  .scfn { background: var(--bg); border-radius: 6px; padding: 8px 10px; border-left: 3px solid; border: 1px solid var(--border); border-left-width: 3px; }
+  .scfn-n { font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace; margin-bottom: 3px; }
+  .scfn-d { font-size: 10.5px; color: var(--muted); line-height: 1.35; }
+
+  /* TEAM */
+  .team-bar {
+    background: linear-gradient(135deg, #042f4b 0%, #064663 50%, #0a3d62 100%);
+    border-radius: 12px;
+    padding: 16px 22px;
+    display: flex; align-items: center; justify-content: space-between; gap: 18px;
+    position: relative; overflow: hidden;
+  }
+
+  .team-bar::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--purple), var(--cyan), var(--green), var(--amber));
+  }
+
+  .t-left { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+  .t-logo {
+    width: 50px; height: 50px;
+    background: linear-gradient(135deg, var(--purple), var(--cyan));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+    border: 1.5px solid rgba(255,255,255,0.1);
+  }
+
+  .t-label { font-size: 9px; color: #94a3b8; font-family: 'JetBrains Mono', monospace; letter-spacing: 2px; }
+  .t-name  { font-size: 17px; font-weight: 800; color: #fff; margin-top: 2px; }
+
+  .t-members { display: flex; gap: 8px; flex: 1; justify-content: center; }
+
+  .mc {
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 10px 16px;
+    text-align: center;
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mc::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .mc:nth-child(1)::before { background: var(--purple); }
+  .mc:nth-child(2)::before { background: var(--cyan); }
+  .mc:nth-child(3)::before { background: var(--green); }
+  .mc:nth-child(4)::before { background: var(--amber); }
+
+  .mc-icon { font-size: 22px; margin-bottom: 4px; }
+  .mc-name { font-size: 13px; font-weight: 800; color: #fff; }
+  .mc-role { font-size: 10px; color: #94a3b8; margin-top: 3px; font-family: 'JetBrains Mono', monospace; }
+
+  .t-right { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+
+  .live-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(5,150,105,0.2);
+    border: 2px solid #10b981;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-size: 12px; font-weight: 800; color: #6ee7b7;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .ld { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: blink 1.4s infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.1; } }
+
+  .vlink { font-size: 10px; color: #64748b; font-family: 'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">🧾</div>
+      <div>
+        <div class="h-title">AI-Invoice <span class="accent">NFT</span></div>
+        <div class="h-sub">AI WRITES IT · BLOCKCHAIN PROVES IT</div>
+        <div class="h-tags">
+          <span class="tag tg1">Polygon Amoy</span>
+          <span class="tag tg2">ERC-721</span>
+          <span class="tag tg3">Cerebras AI</span>
+          <span class="tag tg4">IPFS / Pinata</span>
+          <span class="tag tg2">USDT Payments</span>
+          <span class="tag tg1">Solidity</span>
+          <span class="tag tg3">Next.js · React</span>
+        </div>
+      </div>
+    </div>
+    <div class="h-right">
+      <div class="dapp-badge">
+        <div class="dl">PROJECT TYPE</div>
+        <div class="dm">DApp · 2025</div>
+        <div class="ds">GEC Khagaria · CSE (IoT)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-num" style="color:var(--purple)">ERC-721</div>
+      <div class="stat-lbl">NFT STANDARD</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" style="color:var(--cyan)">~2s</div>
+      <div class="stat-lbl">AI INVOICE TIME</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" style="color:var(--green)">0%</div>
+      <div class="stat-lbl">HIDDEN FEES</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" style="color:var(--amber)">∞</div>
+      <div class="stat-lbl">PROOF LIFESPAN</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" style="color:var(--red)">100%</div>
+      <div class="stat-lbl">TAMPER-PROOF</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- LEFT -->
+    <div class="col">
+
+      <div class="panel">
+        <div class="ph ph-red">⚠ PROBLEM</div>
+        <div class="pb">
+          <div class="li"><span class="mark mark-r">✗</span><span>Can't share work due to <strong>client privacy</strong></span></div>
+          <div class="li"><span class="mark mark-r">✗</span><span>No proof of <strong>paid vs. unpaid</strong> projects</span></div>
+          <div class="li"><span class="mark mark-r">✗</span><span>Invoices are easily <strong>forged or disputed</strong></span></div>
+          <div class="li"><span class="mark mark-r">✗</span><span>Manual creation wastes <strong>10–15 min</strong> each</span></div>
+          <div class="li"><span class="mark mark-r">✗</span><span>Payment platforms charge <strong>hidden fees</strong></span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph ph-green">✅ SOLUTION</div>
+        <div class="pb">
+          <div class="li"><span class="mark mark-g">✓</span><span><strong>NFT as proof</strong> of completed work — permanent, public</span></div>
+          <div class="li"><span class="mark mark-g">✓</span><span><strong>AI in seconds</strong> — plain English → structured invoice</span></div>
+          <div class="li"><span class="mark mark-g">✓</span><span>Blockchain records are <strong>tamper-proof</strong> forever</span></div>
+          <div class="li"><span class="mark mark-g">✓</span><span><strong>Zero fees</strong> — direct wallet-to-wallet USDT transfer</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph ph-purple">⚡ HOW IT WORKS</div>
+        <div class="pb">
+          <div class="li">
+            <div class="snum" style="background:var(--purple)">1</div>
+            <div><span class="stitle">Connect MetaMask Wallet</span><span class="sdesc">Link to Polygon Amoy Testnet</span></div>
+          </div>
+          <div class="li">
+            <div class="snum" style="background:var(--cyan)">2</div>
+            <div><span class="stitle">Register On-Chain Identity</span><span class="sdesc">Portfolio URL stored on blockchain</span></div>
+          </div>
+          <div class="li">
+            <div class="snum" style="background:var(--purple)">3</div>
+            <div><span class="stitle">Describe Work — AI Generates Invoice</span><span class="sdesc">Cerebras AI extracts all details automatically</span></div>
+          </div>
+          <div class="li">
+            <div class="snum" style="background:var(--green)">4</div>
+            <div><span class="stitle">Mint Invoice as NFT</span><span class="sdesc">Metadata on IPFS → ERC-721 minted on Polygon</span></div>
+          </div>
+          <div class="li">
+            <div class="snum" style="background:var(--amber)">5</div>
+            <div><span class="stitle">Client Pays in USDT</span><span class="sdesc">Smart contract transfers directly to your wallet</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph ph-cyan">📜 SMART CONTRACT</div>
+        <div class="scfn-grid">
+          <div class="scfn" style="border-left-color:var(--purple)">
+            <div class="scfn-n" style="color:var(--purple)">registerUser()</div>
+            <div class="scfn-d">Store wallet + portfolio on-chain</div>
+          </div>
+          <div class="scfn" style="border-left-color:var(--cyan)">
+            <div class="scfn-n" style="color:var(--cyan)">mintInvoice()</div>
+            <div class="scfn-d">ERC-721 NFT with IPFS CID</div>
+          </div>
+          <div class="scfn" style="border-left-color:var(--green)">
+            <div class="scfn-n" style="color:var(--green)">payInvoice()</div>
+            <div class="scfn-d">USDT client → recipient wallet</div>
+          </div>
+          <div class="scfn" style="border-left-color:var(--amber)">
+            <div class="scfn-n" style="color:var(--amber)">checkPayment()</div>
+            <div class="scfn-d">Real-time on-chain status</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- MIDDLE -->
+    <div class="col">
+
+      <div class="panel">
+        <div class="ph ph-cyan">🔄 SYSTEM FLOW</div>
+        <div class="flow">
+
+          <div class="fn fn-p">
+            <div class="fn-icon">👤</div>
+            <div class="fn-title">Freelancer Opens DApp</div>
+            <div class="fn-sub">Connects MetaMask · Polygon Amoy · Registers identity</div>
+          </div>
+
+          <div class="arr"><span class="arr-tag">plain english</span></div>
+
+          <div class="fn fn-c">
+            <div class="fn-icon">🤖</div>
+            <div class="fn-title">Cerebras AI — Invoice Generation</div>
+            <div class="fn-sub">Extracts: Recipient · Amount · Scope · Due Date · Rate</div>
+          </div>
+
+          <div class="arr"><span class="arr-tag">review & approve</span></div>
+
+          <div class="fn fn-a">
+            <div class="fn-icon">📝</div>
+            <div class="fn-title">Iterative Editing Loop</div>
+            <div class="fn-sub">Conversational feedback → AI refines → Final "ok" approval</div>
+          </div>
+
+          <div class="arr"><span class="arr-tag">JSON metadata</span></div>
+
+          <div class="fn fn-g">
+            <div class="fn-icon">🌐</div>
+            <div class="fn-title">IPFS via Pinata</div>
+            <div class="fn-sub">Invoice pinned to decentralized storage → CID returned</div>
+          </div>
+
+          <div class="arr"><span class="arr-tag">mint + CID</span></div>
+
+          <div class="fn fn-p">
+            <div class="fn-icon">📜</div>
+            <div class="fn-title">Smart Contract — Mint ERC-721</div>
+            <div class="fn-sub">NFT minted on Polygon · IPFS CID on-chain · NFT ID = Invoice #</div>
+          </div>
+
+          <div class="arr"></div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; width:100%">
+            <div class="fn fn-c" style="width:100%">
+              <div class="fn-icon">🖼️</div>
+              <div class="fn-title" style="font-size:12px">NFT Gallery</div>
+              <div class="fn-sub">All invoice NFTs</div>
+            </div>
+            <div class="fn fn-g" style="width:100%">
+              <div class="fn-icon">💸</div>
+              <div class="fn-title" style="font-size:12px">Pay in USDT</div>
+              <div class="fn-sub">Client pays directly</div>
+            </div>
+            <div class="fn fn-a" style="width:100%">
+              <div class="fn-icon">✅</div>
+              <div class="fn-title" style="font-size:12px">Verify Status</div>
+              <div class="fn-sub">On-chain tracking</div>
+            </div>
+          </div>
+
+          <!-- payment flow -->
+          <div style="margin-top:10px; width:100%; background:var(--bg); border-radius:7px; border:1.5px solid var(--border);">
+            <div style="padding:5px 12px; font-size:9px; font-weight:800; font-family:'JetBrains Mono',monospace; color:var(--muted); border-bottom:1.5px solid var(--border); letter-spacing:1.5px;">💸 PAYMENT FLOW</div>
+            <div class="pf">
+              <div class="pn fn-p">Freelancer</div>
+              <span class="pa">→</span>
+              <div class="pn fn-c">Share NFT #</div>
+              <span class="pa">→</span>
+              <div class="pn fn-a">Client approves USDT</div>
+              <span class="pa">→</span>
+              <div class="pn fn-g">Smart Contract</div>
+              <span class="pa">→</span>
+              <div class="pn fn-p">Wallet ✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph ph-purple">⚙ TECH STACK</div>
+        <div class="tech-grid">
+          <div class="tech-card tc1">
+            <div class="tc-name">⛓ BLOCKCHAIN</div>
+            <div class="tc-pills">
+              <span class="pill">Solidity</span>
+              <span class="pill">ERC-721</span>
+              <span class="pill">ERC-20</span>
+              <span class="pill">Polygon Amoy</span>
+            </div>
+          </div>
+          <div class="tech-card tc2">
+            <div class="tc-name">🖥 FRONTEND</div>
+            <div class="tc-pills">
+              <span class="pill">React</span>
+              <span class="pill">CSS3</span>
+              <span class="pill">MetaMask SDK</span>
+              <span class="pill">ethers.js</span>
+            </div>
+          </div>
+          <div class="tech-card tc3">
+            <div class="tc-name">⚡ BACKEND</div>
+            <div class="tc-pills">
+              <span class="pill">Next.js</span>
+              <span class="pill">Node.js</span>
+              <span class="pill">REST API</span>
+            </div>
+          </div>
+          <div class="tech-card tc4">
+            <div class="tc-name">🤖 AI + STORAGE</div>
+            <div class="tc-pills">
+              <span class="pill">Cerebras AI</span>
+              <span class="pill">IPFS</span>
+              <span class="pill">Pinata</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph ph-amber">🔗 BLOCKCHAIN BASICS</div>
+        <div class="bc-grid">
+          <div class="bc-card bc1t">
+            <div class="bc-term">⬡ BLOCKCHAIN</div>
+            <div class="bc-def">Distributed ledger of sealed blocks. Once written, data cannot be changed — ideal for proof of work.</div>
+          </div>
+          <div class="bc-card bc2t">
+            <div class="bc-term">🎨 NFT (ERC-721)</div>
+            <div class="bc-def">Non-Fungible Token — a unique digital asset. Each invoice = one NFT with its own permanent ID.</div>
+          </div>
+          <div class="bc-card bc3t">
+            <div class="bc-term">📜 SMART CONTRACT</div>
+            <div class="bc-def">Self-executing code on blockchain — handles minting, payments, registry. No middlemen needed.</div>
+          </div>
+          <div class="bc-card bc4t">
+            <div class="bc-term">🌐 IPFS</div>
+            <div class="bc-def">Decentralized storage. Invoice metadata pinned via Pinata — no single server can delete it.</div>
+          </div>
+          <div class="bc-card bc5t">
+            <div class="bc-term">💳 WALLET</div>
+            <div class="bc-def">Your identity on blockchain. MetaMask signs transactions — like a cryptographic digital signature.</div>
+          </div>
+          <div class="bc-card bc6t">
+            <div class="bc-term">🔺 POLYGON</div>
+            <div class="bc-def">Layer-2 Ethereum chain — fast and cheap. Amoy Testnet for development. Tiny gas fees.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="col">
+
+      <div class="panel">
+        <div class="ph ph-purple">✨ CORE FEATURES</div>
+        <div class="pb">
+          <div class="feat">
+            <div class="feat-t" style="color:var(--purple)"><span>🤖</span> AI Invoice Generation</div>
+            <div class="feat-d">Plain English → AI extracts all details. Conversational editing. Rate estimation included.</div>
+          </div>
+          <div class="feat">
+            <div class="feat-t" style="color:var(--cyan)"><span>🎨</span> NFT Minting</div>
+            <div class="feat-d">Invoice → ERC-721 NFT on Polygon. NFT ID = Invoice #. Stored on IPFS permanently.</div>
+          </div>
+          <div class="feat">
+            <div class="feat-t" style="color:var(--green)"><span>💸</span> Crypto Payments</div>
+            <div class="feat-d">USDT stablecoin. Direct wallet transfer. Zero fees. Real-time on-chain verification.</div>
+          </div>
+          <div class="feat">
+            <div class="feat-t" style="color:var(--amber)"><span>📊</span> Dashboard</div>
+            <div class="feat-d">NFT Gallery. Payment status checker. Token whitelist. User registry lookup.</div>
+          </div>
+          <div class="feat">
+            <div class="feat-t" style="color:var(--red)"><span>🔐</span> On-Chain Identity</div>
+            <div class="feat-d">Portfolio URL on blockchain. Verifiable freelancer profile. Anyone can verify.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph ph-cyan">🏗 ARCHITECTURE</div>
+        <div class="arch">
+          <div class="an fn-p"><span>🌐</span> React Frontend + MetaMask</div>
+          <div class="aa"></div>
+          <div class="an fn-c"><span>⚡</span> Next.js API + Cerebras AI</div>
+          <div class="aa"></div>
+          <div class="an fn-a"><span>📦</span> Pinata → IPFS Storage</div>
+          <div class="aa"></div>
+          <div class="an fn-p"><span>📜</span> Solidity Smart Contract</div>
+          <div class="aa"></div>
+          <div class="an fn-g"><span>🔺</span> Polygon Amoy Blockchain</div>
+          <div class="aa"></div>
+          <div class="an fn-p"><span>💼</span> User Wallet — NFT + USDT</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph ph-amber">📊 NFT STATES</div>
+        <div class="nft-grid">
+          <div class="nft-st"><div class="nft-v" style="color:var(--green)">PAID</div><div class="nft-l">USDT Transferred</div></div>
+          <div class="nft-st"><div class="nft-v" style="color:var(--amber)">PENDING</div><div class="nft-l">Awaiting Payment</div></div>
+          <div class="nft-st"><div class="nft-v" style="color:var(--cyan)">MINTED</div><div class="nft-l">On-chain Proof</div></div>
+          <div class="nft-st"><div class="nft-v" style="color:var(--purple)">STORED</div><div class="nft-l">IPFS Pinned</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph ph-amber">🚀 UPCOMING</div>
+        <div class="pb">
+          <div class="up"><div class="up-d"></div>Registration fee to prevent spam</div>
+          <div class="up"><div class="up-d"></div>Native MATIC token payments</div>
+          <div class="up"><div class="up-d"></div>Client remarks stored on-chain</div>
+          <div class="up"><div class="up-d"></div>AI-generated NFT artwork per invoice</div>
+          <div class="up"><div class="up-d"></div>Dedicated Payee dashboard</div>
+          <div class="up"><div class="up-d"></div>Security audit before mainnet</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TEAM -->
+  <div class="team-bar">
+    <div class="t-left">
+      <div class="t-logo">👥</div>
+      <div>
+        <div class="t-label">TEAM</div>
+        <div class="t-name">GEC Khagaria · CSE (IoT)</div>
+      </div>
+    </div>
+
+    <div class="t-members">
+      <div class="mc">
+        <div class="mc-icon">🧑‍💻</div>
+        <div class="mc-name">Aman Kumar</div>
+        <div class="mc-role">Smart Contract Dev</div>
+      </div>
+      <div class="mc">
+        <div class="mc-icon">🧑‍💻</div>
+        <div class="mc-name">Pankaj Kumar</div>
+        <div class="mc-role">Frontend Dev</div>
+      </div>
+      <div class="mc">
+        <div class="mc-icon">🧑‍💻</div>
+        <div class="mc-name">Abhishek Kumar</div>
+        <div class="mc-role">Backend Dev</div>
+      </div>
+    </div>
+
+    <div class="t-right">
+      <div class="live-badge"><div class="ld"></div>LIVE ON VERCEL</div>
+      <div class="vlink">ai-on-chain-invoice.vercel.app</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
