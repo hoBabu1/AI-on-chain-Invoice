@@ -103,9 +103,13 @@ function Register({ walletAddress }) {
       console.log('Portfolio Website:', portfolioWebsite);
       console.log('User Address:', walletAddress);
 
+      const feeData = await provider.getFeeData();
+      const maxPriorityFee = feeData.maxPriorityFeePerGas * 2n;
+      const maxFee = feeData.maxFeePerGas * 2n;
+
       const tx = await contract.registerUser(portfolioWebsite, {
-        maxPriorityFeePerGas: ethers.parseUnits('25', 'gwei'),
-        maxFeePerGas: ethers.parseUnits('50', 'gwei'),
+        maxPriorityFeePerGas: maxPriorityFee,
+        maxFeePerGas: maxFee,
       });
       
       // Step 3: Transaction Sent
