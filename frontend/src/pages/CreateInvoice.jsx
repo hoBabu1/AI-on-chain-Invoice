@@ -19,7 +19,7 @@ function CreateInvoice({ walletAddress }) {
   const [statusMessage, setStatusMessage] = useState('');
 
   const MAX_ATTEMPTS = 5;
-  const BACKEND_URL = 'https://ai-on-chain-invoice.onrender.com';
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
   const MINTING_STEPS = [
     { id: 1, label: 'AI Processing Invoice', emoji: '🤖' },

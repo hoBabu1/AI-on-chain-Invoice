@@ -2,7 +2,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import Cerebras from '@cerebras/cerebras_cloud_sdk';
 import FormData from 'form-data';
 import fetch from 'node-fetch';
 
@@ -12,7 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const client = new Cerebras({ apiKey: 'csk-cjx9mvye6pc533ypfnx8ff3hxpm9pmjw46mr3t3p6dydddm8' });
 
 const PINATA_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiI1YjM2MzczYS02OTdlLTQ5YWUtYmRjYy02MzM1NTE5ZTc2M2YiLCJlbWFpbCI6ImFtYW5rc2FoMTIzQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxLCJpZCI6IkZSQTEifSx7ImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxLCJpZCI6Ik5ZQzEifV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmxlZCI6ZmFsc2UsInN0YXR1cyI6IkFDVElWRSJ9LCJhdXRoZW50aWNhdGlvblR5cGUiOiJzY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiJlMjUyOWM2ZWQ3YTY2N2QwNDY5ZSIsInNjb3BlZEtleVNlY3JldCI6IjA0NDFhMzdiZmZhMGI2NjdhMzk2YmI0MDI0MWQ3NGNmNzgwYTZmYTFmMzlhZGNlZWZiMDhiNDE5ZGIxMjVlNDQiLCJleHAiOjE3OTA4NDAyMTB9.Gkh9lQYE2yQxsGm8KcsfKZAt7QAa3JeqOJgKPZ2BZOA";
 
@@ -26,7 +26,6 @@ app.post('/api/generate-invoice', async (req, res) => {
       const aiResponse = await generateInvoice(userInvoice, allowAssumptions);
       const parsedData = JSON.parse(aiResponse);
 
-      // Ensure amount is a pure number
       if (parsedData.amount) {
         parsedData.amount = parseFloat(parsedData.amount);
       }
@@ -40,8 +39,7 @@ app.post('/api/generate-invoice', async (req, res) => {
     } else if (action === 'update') {
       const aiResponse = await updateInvoice(currentInvoice, userFeedback);
       const parsedData = JSON.parse(aiResponse);
-      
-      // Ensure amount is a pure number
+
       if (parsedData.amount) {
         parsedData.amount = parseFloat(parsedData.amount);
       }
@@ -75,14 +73,14 @@ app.post('/api/upload-to-ipfs', async (req, res) => {
     };
 
     const jsonBuffer = Buffer.from(JSON.stringify(finalInvoice, null, 2));
-    
+
     const formData = new FormData();
     formData.append("file", jsonBuffer, {
       filename: `invoice-${Date.now()}.json`,
       contentType: "application/json",
     });
     formData.append("network", "public");
-    
+
     const response = await fetch("https://uploads.pinata.cloud/v3/files", {
       method: "POST",
       headers: {
@@ -91,7 +89,7 @@ app.post('/api/upload-to-ipfs', async (req, res) => {
       },
       body: formData,
     });
-    
+
     const result = await response.json();
 
     if (!result.data?.cid) {
@@ -118,25 +116,22 @@ async function shouldAIAssume(userInput) {
     'estimate', 'you decide', 'assume', 'your own',
     'work it out', 'determine', 'guess'
   ];
-  
+
   const lowerInput = userInput.toLowerCase();
   if (assumeKeywords.some(keyword => lowerInput.includes(keyword))) {
     return true;
   }
-  
+
   try {
-    const intentCheckPrompt = `Analyze if the user is asking you to calculate, estimate, or assume missing invoice details.
-
-User message: "${userInput}"
-
-Respond with ONLY "YES" or "NO".`;
-
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
-      generationConfig: { temperature: 0.1, maxOutputTokens: 10 }
+    const response = await client.chat.completions.create({
+      model: 'gpt-oss-120b',
+      max_tokens: 10,
+      messages: [{
+        role: 'user',
+        content: `Analyze if the user is asking you to calculate, estimate, or assume missing invoice details.\n\nUser message: "${userInput}"\n\nRespond with ONLY "YES" or "NO".`
+      }]
     });
-    const result = await model.generateContent(intentCheckPrompt);
-    return result.response.text().trim().toUpperCase().includes('YES');
+    return response.choices[0].message.content.trim().toUpperCase().includes('YES');
   } catch (error) {
     return false;
   }
@@ -170,13 +165,17 @@ ${allowAssumptions ? 'ASSUMPTION MODE: Estimate missing values based on work typ
 
 Return ONLY JSON, no explanations.`;
 
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
-    systemInstruction: systemPrompt,
-    generationConfig: { temperature: 0.1, maxOutputTokens: 500 }
+  const response = await client.chat.completions.create({
+    model: 'gpt-oss-120b',
+    max_tokens: 500,
+    temperature: 0.1,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userInvoice }
+    ]
   });
-  const result = await model.generateContent(userInvoice);
-  return result.response.text();
+
+  return response.choices[0].message.content;
 }
 
 async function updateInvoice(currentInvoice, userFeedback) {
@@ -184,8 +183,6 @@ async function updateInvoice(currentInvoice, userFeedback) {
 
 CURRENT INVOICE:
 ${JSON.stringify(currentInvoice, null, 2)}
-
-USER FEEDBACK: "${userFeedback}"
 
 CRITICAL RULES FOR UPDATES:
 1. If feedback says "amount is 70" or "make amount 70" or "70 dollar" → Set amount to 70 (number only, no $ sign)
@@ -212,13 +209,17 @@ Return complete updated JSON in this format:
 
 Return ONLY JSON, no explanations.`;
 
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
-    systemInstruction: systemPrompt,
-    generationConfig: { temperature: 0.1, maxOutputTokens: 500 }
+  const response = await client.chat.completions.create({
+    model: 'gpt-oss-120b',
+    max_tokens: 500,
+    temperature: 0.1,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userFeedback }
+    ]
   });
-  const result = await model.generateContent(`Update: ${userFeedback}`);
-  return result.response.text();
+
+  return response.choices[0].message.content;
 }
 
 const PORT = 3001;
